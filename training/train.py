@@ -7,17 +7,18 @@ import psutil
 from models.model_2d import ResNet18
 from models.model_3d import I3D
 
-
 import logging
 logging.getLogger('matplotlib').setLevel(logging.WARNING)
 logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
-from dataloader import get_data_loader
 import numpy as np
 import pandas as pd
-import torch
+import matplotlib.pyplot as plt
 import time
+
+import torch
+from dataloader import get_data_loader
 
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Force CPU usage
@@ -25,12 +26,11 @@ device = torch.device('cpu')
 
 import sklearn.metrics as metrics
 from tqdm import tqdm
-import warnings
+#import warnings
 import random
-#import pandas
 from training.experiment_config import config
-from datetime import datetime
-import argparse
+#from datetime import datetime
+#import argparse
 
 torch.backends.cudnn.benchmark = True
 
@@ -73,7 +73,7 @@ def train(
     valid_df = pd.read_csv(valid_csv_path)
 
     auc_per_epoch = []
-    loss_per_epoch = []
+    #loss_per_epoch = []
     loss_per_iteration = []
 
     print()
@@ -136,16 +136,16 @@ def train(
         ).to(device)
 
     loss_function = torch.nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(
-        model.parameters(),
-        lr=config.LEARNING_RATE,
-        weight_decay=config.WEIGHT_DECAY,
-    )
-    # optimizer = torch.optim.SGD(
+    # optimizer = torch.optim.Adam(
     #     model.parameters(),
     #     lr=config.LEARNING_RATE,
-    #     momentum=0.9
+    #     weight_decay=config.WEIGHT_DECAY,
     # )
+    optimizer = torch.optim.SGD(
+        model.parameters(),
+        lr=config.LEARNING_RATE,
+        momentum=0.9
+    )
 
     # start a typical PyTorch training
     best_metric = -1
@@ -233,7 +233,7 @@ def train(
             auc_metric = metrics.auc(fpr, tpr)
 
             auc_per_epoch.append(auc_metric)
-            loss_per_epoch.append(epoch_loss)
+            #loss_per_epoch.append(epoch_loss)
 
             if auc_metric > best_metric:
 
@@ -277,12 +277,11 @@ def train(
         ) + "\n Took {:.2f} seconds".format(elapsed_time)
     )
 
-
     process = psutil.Process()
     peak_memory = process.memory_info().peak_wset if hasattr(process.memory_info(), 'peak_wset') else process.memory_info().rss
     peak_memory_mb = peak_memory / (1024 * 1024)
 
-    #Add total training time and memory to best_model metadata
+    # Add total training time and memory to best_model metadata
     metadata["total_training_time"] = elapsed_time
     metadata["memory_usage_mb"] = peak_memory_mb
     np.save(
@@ -296,12 +295,11 @@ def train(
     auc_df = pd.DataFrame({
         'epoch': list(range(1, len(auc_per_epoch)+1)),
         'auc': auc_per_epoch,
-        'loss': loss_per_epoch
+        #'loss': loss_per_epoch
     })
     auc_df.to_csv(exp_save_root / f"auc_vs_epoch_{experiment_name}.csv", index=False)
 
     # Plot AUC vs epoch
-    import matplotlib.pyplot as plt
     plt.figure(figsize=(8, 4))
     plt.plot(auc_df['epoch'], auc_df['auc'], marker='o', label='AUC')
     plt.xlabel('Epoch')
@@ -313,7 +311,9 @@ def train(
     plt.close()
 
     # Save loss per iteration
-    loss_iter_df = pd.DataFrame({'iteration': list(range(1, len(loss_per_iteration)+1)), 'loss': loss_per_iteration})
+    loss_iter_df = pd.DataFrame({
+        'iteration': list(range(1, len(loss_per_iteration)+1)), 'loss': loss_per_iteration
+        })
     loss_iter_df.to_csv(exp_save_root / f"loss_vs_iteration.csv_{experiment_name}", index=False)
 
     # Plot loss vs iteration

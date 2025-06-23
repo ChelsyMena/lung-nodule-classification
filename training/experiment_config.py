@@ -32,7 +32,7 @@ class Configuration(object):
         if not self.EXPERIMENT_DIR.exists():
             self.EXPERIMENT_DIR.mkdir(parents=True)
             
-        self.EXPERIMENT_NAME = "baseline3D_adam10epochs"
+        self.EXPERIMENT_NAME = "baseline3D_sgd10epochs"
         self.MODE = "3D" # 2D or 3D
 
         # Training parameters
