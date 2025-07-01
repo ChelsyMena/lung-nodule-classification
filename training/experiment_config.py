@@ -32,15 +32,15 @@ class Configuration(object):
         if not self.EXPERIMENT_DIR.exists():
             self.EXPERIMENT_DIR.mkdir(parents=True)
             
-        self.EXPERIMENT_NAME = "baseline3D_sgd10epochs"
-        self.MODE = "3D" # 2D or 3D
+        self.EXPERIMENT_NAME = "2D_Adam_10e_64bs"
+        self.MODE = "2D" # 2D or 3D
 
         # Training parameters
         self.SEED = 2025
         self.NUM_WORKERS = 8
         self.SIZE_MM = 50
         self.SIZE_PX = 64
-        self.BATCH_SIZE = 32
+        self.BATCH_SIZE = 64
         self.ROTATION = ((-20, 20), (-20, 20), (-20, 20))
         self.TRANSLATION = True
         self.EPOCHS = 10

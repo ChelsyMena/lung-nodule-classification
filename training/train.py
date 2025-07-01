@@ -73,7 +73,7 @@ def train(
     valid_df = pd.read_csv(valid_csv_path)
 
     auc_per_epoch = []
-    #loss_per_epoch = []
+    loss_per_epoch = []
     loss_per_iteration = []
 
     print()
@@ -136,16 +136,16 @@ def train(
         ).to(device)
 
     loss_function = torch.nn.BCEWithLogitsLoss()
-    # optimizer = torch.optim.Adam(
-    #     model.parameters(),
-    #     lr=config.LEARNING_RATE,
-    #     weight_decay=config.WEIGHT_DECAY,
-    # )
-    optimizer = torch.optim.SGD(
+    optimizer = torch.optim.Adam(
         model.parameters(),
         lr=config.LEARNING_RATE,
-        momentum=0.9
+        weight_decay=config.WEIGHT_DECAY,
     )
+    # optimizer = torch.optim.SGD(
+    #     model.parameters(),
+    #     lr=config.LEARNING_RATE,
+    #     momentum=0.9
+    # )
 
     # start a typical PyTorch training
     best_metric = -1
@@ -233,7 +233,7 @@ def train(
             auc_metric = metrics.auc(fpr, tpr)
 
             auc_per_epoch.append(auc_metric)
-            #loss_per_epoch.append(epoch_loss)
+            loss_per_epoch.append(epoch_loss)
 
             if auc_metric > best_metric:
 
@@ -295,7 +295,7 @@ def train(
     auc_df = pd.DataFrame({
         'epoch': list(range(1, len(auc_per_epoch)+1)),
         'auc': auc_per_epoch,
-        #'loss': loss_per_epoch
+        'loss': loss_per_epoch
     })
     auc_df.to_csv(exp_save_root / f"auc_vs_epoch_{experiment_name}.csv", index=False)
 
@@ -310,11 +310,21 @@ def train(
     plt.savefig(exp_save_root / f"auc_vs_epoch_{experiment_name}.png")
     plt.close()
 
+    plt.figure(figsize=(8, 4))
+    plt.plot(auc_df['epoch'], auc_df['loss'], marker='o', label='Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Loss vs Epoch')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(exp_save_root / f"loss_vs_epoch_{experiment_name}.png")
+    plt.close()
+
     # Save loss per iteration
     loss_iter_df = pd.DataFrame({
         'iteration': list(range(1, len(loss_per_iteration)+1)), 'loss': loss_per_iteration
         })
-    loss_iter_df.to_csv(exp_save_root / f"loss_vs_iteration.csv_{experiment_name}", index=False)
+    loss_iter_df.to_csv(exp_save_root / f"loss_vs_iteration_{experiment_name}.csv", index=False)
 
     # Plot loss vs iteration
     plt.figure(figsize=(8, 4))
@@ -349,11 +359,10 @@ def test_train_pipeline(sample_size):
         exp_save_root= exp_save_root
         )
 
-
 if __name__ == "__main__":
 
     # Pipeline test
-    # test_train_pipeline(sample_size=64)
+    #test_train_pipeline(sample_size=128)
 
     # Real Training
 
