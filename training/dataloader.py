@@ -6,7 +6,7 @@ import torch.utils.data as data
 from torch.utils.data import DataLoader
 import numpy.linalg as npl
 import scipy.ndimage as ndi
-from experiment_config import config
+from training.experiment_config import config
 import pandas as pd
 
 def _calculateAllPermutations(itemList):

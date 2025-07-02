@@ -40,7 +40,7 @@ class Configuration(object):
         self.NUM_WORKERS = 8
         self.SIZE_MM = 50
         self.SIZE_PX = 64
-        self.BATCH_SIZE = 64
+        self.BATCH_SIZE = 1
         self.ROTATION = ((-20, 20), (-20, 20), (-20, 20))
         self.TRANSLATION = True
         self.EPOCHS = 10
