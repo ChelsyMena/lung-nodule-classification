@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from pathlib import Path
 import numpy as np
@@ -455,7 +458,8 @@ def test():
     )
 
     for i, data in enumerate(train_loader):
-        print(i, data["image"].shape, data["label"].shape)
+        #print(i, data["image"].shape, data["label"].shape)
+        print(i, data["ID"])
 
 if __name__ == "__main__":
     test()

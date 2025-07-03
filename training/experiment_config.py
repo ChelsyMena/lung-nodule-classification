@@ -41,8 +41,8 @@ class Configuration(object):
         self.SIZE_MM = 50
         self.SIZE_PX = 64
         self.BATCH_SIZE = 1
-        self.ROTATION = ((-20, 20), (-20, 20), (-20, 20))
-        self.TRANSLATION = True
+        self.ROTATION = ((-1,1), (-1,1), (-1,1)) #((-20, 20), (-20, 20), (-20, 20)) # #
+        self.TRANSLATION = False #True
         self.EPOCHS = 10
         self.PATIENCE = 20
         self.PATCH_SIZE = [64, 128, 128]

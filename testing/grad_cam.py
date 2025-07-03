@@ -16,6 +16,14 @@ from training.dataloader import get_data_loader
 from itertools import islice
 import cv2
 
+from dotenv import load_dotenv
+import os
+from pathlib import Path
+load_dotenv()
+volumes_dir = Path(os.getenv("VOLUME_DIR"))
+#working_dir = os.getenv("WORKING_DIR")
+
+
 if __name__ == "__main__":
 
 	# load best model
@@ -40,25 +48,29 @@ if __name__ == "__main__":
 		rotations=config.ROTATION,
 		translations=config.TRANSLATION,
 		)
-
 	
-	desired_index = 61
+	desired_index = 27
 	data = next(islice(image_loader, desired_index, None))
 	label = data["label"].float().to(device)
+	image_location = volumes_dir / "luna25_nodule_blocks" / "image" / f"{data['ID'][0]}.npy"
+
 	inputs = data["image"]
 	input_tensor = inputs.to(device)
-
-	#input_tensor = # Create an input tensor image for your model..
-	# Note: input_tensor can be a batch tensor with several images!
-
-	# We have to specify the target we want to generate the CAM for.
 	targets = [ClassifierOutputTarget(0)]
 
-	# Assuming inputs is a batch tensor: (B, C, H, W)
-	input_img = inputs[0].detach().cpu().numpy()  # Take the first image in the batch
-	input_img = np.transpose(input_img, (1, 2, 0))  # (C, H, W) -> (H, W, C)
-	input_img = (input_img - input_img.min()) / (input_img.max() - input_img.min() + 1e-8)  # Normalize to [0, 1]
-	input_img = input_img.astype(np.float32)
+	volume = np.load(str(image_location))
+	middle_idx = volume.shape[0] // 2
+	middle_slice = volume[middle_idx, :, :]
+	orig_img = np.stack([middle_slice]*3, axis=-1)
+	orig_img = orig_img.astype(np.float32)
+	orig_img = (orig_img - orig_img.min()) / (orig_img.max() - orig_img.min() + 1e-8)
+	h, w = orig_img.shape[:2]
+	 
+
+	# input_img = inputs[0].detach().cpu().numpy()  
+	# input_img = np.transpose(input_img, (1, 2, 0))
+	# input_img = (input_img - input_img.min()) / (input_img.max() - input_img.min() + 1e-8)
+	# input_img = input_img.astype(np.float32)
 
 	# Construct the CAM object once, and then re-use it on many images.
 	with GradCAM(model=model, target_layers=target_layers) as cam:
@@ -67,16 +79,16 @@ if __name__ == "__main__":
 		# In this example grayscale_cam has only one image in the batch:
 		grayscale_cam = grayscale_cam[0, :]
 		# input_img.shape: (H, W, C)
-		h, w = input_img.shape[:2]
+		h, w = orig_img.shape[:2]
 		# Upsample grayscale_cam to input image size
 		grayscale_cam_resized = cv2.resize(grayscale_cam, (w, h), interpolation=cv2.INTER_LINEAR)
-		visualization = show_cam_on_image(input_img, grayscale_cam_resized, use_rgb=True)
+		visualization = show_cam_on_image(orig_img, grayscale_cam_resized, use_rgb=True)
 		# You can also get the model outputs without having to redo inference
 		model_outputs = cam.outputs
 
 		plt.imshow(visualization)
-		plt.axis('off')
-		plt.title('Grad-CAM')
-		plt.show()
+		#plt.axis('off')
+		plt.title(f'Grad-CAM on nodule {data["ID"][0]}\nlabel: {label.item()}, model output: {model_outputs[0].item():.0f}')
 		plt.imsave("testing\grad_cam_result.png", visualization, dpi=300)
+		plt.show()
 
