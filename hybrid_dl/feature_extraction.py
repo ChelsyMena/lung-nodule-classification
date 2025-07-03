@@ -11,7 +11,7 @@ from training.dataloader import get_data_loader
 from tqdm import tqdm
 
 import torch
-from dl_models import ResNet18
+from dl_models import ResNet18_Features, VGG16_Features
 
 if __name__ == "__main__":
 
@@ -32,7 +32,8 @@ if __name__ == "__main__":
 			translations=config.TRANSLATION,
 		)
 
-		model = ResNet18()
+		#model = ResNet18_Features()
+		model = VGG16_Features()
 		device = torch.device('cpu')
 		outputs = []
 		labels = []
@@ -61,4 +62,4 @@ if __name__ == "__main__":
 		feature_cols = [f'feat_{i}' for i in range(outputs.shape[1])]
 		df_out = pd.DataFrame(features_and_labels, columns=feature_cols + ['label'])
 
-		df_out.to_csv(config.WORKDIR +"\hybrid_dl" + f'features_with_labels_{split_name}.csv', index=False)
+		df_out.to_csv(f'features_{split_name}_vgg.csv', index=False)
