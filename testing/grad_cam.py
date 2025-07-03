@@ -5,38 +5,50 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import torch
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.base_cam import BaseCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
-from models.model_2d import ResNet18
-import matplotlib.pyplot as plt
 
-import pandas as pd
-import numpy as np
+from models.model_2d import ResNet18
 from training.experiment_config import config
 from training.dataloader import get_data_loader
-from itertools import islice
-import cv2
 
-from dotenv import load_dotenv
+import cv2
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+#from itertools import islice
+
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 load_dotenv()
 volumes_dir = Path(os.getenv("VOLUME_DIR"))
-#working_dir = os.getenv("WORKING_DIR")
 
+class BinaryClassifierOutputTarget:
+		def __call__(self, model_output):
+			if model_output.ndim == 2:
+				return model_output[:, 0]
+			elif model_output.ndim == 1:
+				return model_output
+			else:
+				raise ValueError(f"Unexpected model_output shape: {model_output.shape}")
 
 if __name__ == "__main__":
 
-	# load best model
+	# load model
 	model = ResNet18()
 	device = torch.device('cpu')
 	model.load_state_dict(torch.load(
 		r"results\baseline2D_adam10epochs\best_metric_model.pth",
 		map_location='cpu'
 	))
-
+	model.eval()
 	target_layers = [model.resnet18.layer4[-1]]
 
 	valid = pd.read_csv(config.CSV_DIR_VALID)
+	valid = valid[valid["label"] == 0]
+
 	image_loader = get_data_loader(
 		data_dir=config.DATADIR,
 		dataset=valid,
@@ -48,47 +60,65 @@ if __name__ == "__main__":
 		rotations=config.ROTATION,
 		translations=config.TRANSLATION,
 		)
-	
-	desired_index = 27
-	data = next(islice(image_loader, desired_index, None))
-	label = data["label"].float().to(device)
-	image_location = volumes_dir / "luna25_nodule_blocks" / "image" / f"{data['ID'][0]}.npy"
 
-	inputs = data["image"]
-	input_tensor = inputs.to(device)
-	targets = [ClassifierOutputTarget(0)]
-
-	volume = np.load(str(image_location))
-	middle_idx = volume.shape[0] // 2
-	middle_slice = volume[middle_idx, :, :]
-	orig_img = np.stack([middle_slice]*3, axis=-1)
-	orig_img = orig_img.astype(np.float32)
-	orig_img = (orig_img - orig_img.min()) / (orig_img.max() - orig_img.min() + 1e-8)
-	h, w = orig_img.shape[:2]
-	 
-
-	# input_img = inputs[0].detach().cpu().numpy()  
-	# input_img = np.transpose(input_img, (1, 2, 0))
-	# input_img = (input_img - input_img.min()) / (input_img.max() - input_img.min() + 1e-8)
-	# input_img = input_img.astype(np.float32)
-
-	# Construct the CAM object once, and then re-use it on many images.
+	#Construct the CAM object once, and then re-use it on many images.
 	with GradCAM(model=model, target_layers=target_layers) as cam:
-		# You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
-		grayscale_cam = cam(input_tensor=input_tensor, targets=targets)
-		# In this example grayscale_cam has only one image in the batch:
-		grayscale_cam = grayscale_cam[0, :]
-		# input_img.shape: (H, W, C)
-		h, w = orig_img.shape[:2]
-		# Upsample grayscale_cam to input image size
-		grayscale_cam_resized = cv2.resize(grayscale_cam, (w, h), interpolation=cv2.INTER_LINEAR)
-		visualization = show_cam_on_image(orig_img, grayscale_cam_resized, use_rgb=True)
-		# You can also get the model outputs without having to redo inference
-		model_outputs = cam.outputs
 
-		plt.imshow(visualization)
-		#plt.axis('off')
-		plt.title(f'Grad-CAM on nodule {data["ID"][0]}\nlabel: {label.item()}, model output: {model_outputs[0].item():.0f}')
-		plt.imsave("testing\grad_cam_result.png", visualization, dpi=300)
-		plt.show()
+		for data in tqdm(image_loader):
 
+			# desired_index = 0
+			# data = next(islice(image_loader, desired_index, None))
+			label = data["label"].float().to(device)
+			image_location = volumes_dir / "luna25_nodule_blocks" / "image" / f"{data['ID'][0]}.npy"
+
+			inputs = data["image"]
+			input_tensor = inputs.to(device)
+			input_tensor.requires_grad_()
+
+			targets = [BinaryClassifierOutputTarget()]
+
+			# Imagen original
+			volume = np.load(str(image_location))
+			middle_idx = volume.shape[0] // 2
+			middle_slice = volume[middle_idx, :, :]
+			orig_img = np.stack([middle_slice]*3, axis=-1)
+			orig_img = orig_img.astype(np.float32)
+			orig_img = (orig_img - orig_img.min()) / (orig_img.max() - orig_img.min() + 1e-8)
+			h, w = orig_img.shape[:2]
+
+			grayscale_cam = cam(input_tensor=input_tensor, targets=targets, eigen_smooth=True)
+			grayscale_cam = grayscale_cam[0, :]
+			h, w = orig_img.shape[:2]
+
+			image_np = data["image"][0].detach().cpu().numpy()
+			image_np = np.transpose(image_np, (1, 2, 0))
+			visualization = show_cam_on_image(image_np, grayscale_cam, use_rgb=True, image_weight=0.7)
+
+			# grayscale_cam_resized = cv2.resize(grayscale_cam, (w, h), interpolation=cv2.INTER_CUBIC)
+			# visualization = show_cam_on_image(orig_img, grayscale_cam_resized, use_rgb=True, image_weight=0.7)
+
+			model_outputs = cam.outputs
+			pred = round(torch.sigmoid(model_outputs[0]).item())
+
+			#print("Grayscale CAM stats:", grayscale_cam.min(), grayscale_cam.max(), grayscale_cam.mean())
+
+			#plt.imshow(visualization)
+			#plt.axis('off')
+			#plt.title(f'Grad-CAM on nodule {data["ID"][0]}\nlabel: {label.item()}, model output: {pred}')
+			#plt.imsave("testing\resnet_gradcams\grad_cam_result.png", visualization, dpi=300)
+			#plt.show()
+
+			plt.subplot(1,3,2)
+			plt.imshow(image_np, cmap='gray')
+			plt.title("Model input")
+
+			plt.subplot(1,3,1)
+			plt.imshow(orig_img, cmap='gray')
+			plt.title("Original image")
+
+			plt.subplot(1,3,3)
+			plt.imshow(visualization)
+			plt.suptitle(f'Grad-CAM on nodule {data["ID"][0]}\nlabel: {label.item()}, model output: {pred}')
+			plt.tight_layout()
+			#plt.show()
+			plt.savefig(f"testing/resnet_gradcams/zeros/{data['ID'][0]}.png", dpi=300)

@@ -245,4 +245,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# results folders
+testing/resnet_gradcams/
+
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks,windows,visualstudiocode,venv

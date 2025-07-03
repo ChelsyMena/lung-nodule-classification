@@ -459,7 +459,7 @@ def test():
 
     for i, data in enumerate(train_loader):
         #print(i, data["image"].shape, data["label"].shape)
-        print(i, data["ID"])
+        print(i, data["label"])
 
 if __name__ == "__main__":
     test()
