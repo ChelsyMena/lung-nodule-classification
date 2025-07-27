@@ -47,7 +47,7 @@ if __name__ == "__main__":
 	target_layers = [model.resnet18.layer4[-1]]
 
 	valid = pd.read_csv(config.CSV_DIR_VALID)
-	valid = valid[valid["label"] == 0]
+	valid = valid[valid["label"] == 1]
 
 	image_loader = get_data_loader(
 		data_dir=config.DATADIR,
@@ -86,7 +86,12 @@ if __name__ == "__main__":
 			orig_img = (orig_img - orig_img.min()) / (orig_img.max() - orig_img.min() + 1e-8)
 			h, w = orig_img.shape[:2]
 
-			grayscale_cam = cam(input_tensor=input_tensor, targets=targets, eigen_smooth=True)
+			grayscale_cam = cam(
+				input_tensor=input_tensor,
+				targets=targets,
+				eigen_smooth=True,
+				aug_smooth=True
+				)
 			grayscale_cam = grayscale_cam[0, :]
 			h, w = orig_img.shape[:2]
 
@@ -118,7 +123,9 @@ if __name__ == "__main__":
 
 			plt.subplot(1,3,3)
 			plt.imshow(visualization)
+			plt.title("Grad-CAM visualization")
+
 			plt.suptitle(f'Grad-CAM on nodule {data["ID"][0]}\nlabel: {label.item()}, model output: {pred}')
 			plt.tight_layout()
 			#plt.show()
-			plt.savefig(f"testing/resnet_gradcams/zeros/{data['ID'][0]}.png", dpi=300)
+			plt.savefig(f"testing/resnet_gradcams/ones/{data['ID'][0]}.png", dpi=300)

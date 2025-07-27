@@ -31,19 +31,19 @@ def display_training_metrics(results_dir="results"):
         try:
             metrics = np.load(config_file, allow_pickle=True).item()
             
-            print(f"📊 Experiment: {experiment_name}")
-            print(f"🎯 Best AUC: {metrics.get('best_auc', 'N/A'):.4f}")
-            print(f"⏱️ Best Epoch: {metrics.get('epoch', 'N/A')}")
-            print(f"📈 Memory Usage: {metrics.get('memory_usage_mb', 'N/A')}")
-            print(f"📅 Training Time: {metrics.get('total_training_time', 'N/A')}")
+            print(f"Experiment: {experiment_name}")
+            print(f"Best AUC: {metrics.get('best_auc', 'N/A'):.4f}")
+            print(f"Best Epoch: {metrics.get('epoch', 'N/A')}")
+            print(f"Memory Usage: {metrics.get('memory_usage_mb', 'N/A')}")
+            print(f"Training Time: {metrics.get('total_training_time', 'N/A')}")
             
             if 'config' in metrics:
-                print("\n📋 Configuration:")
+                print("\nConfiguration:")
                 print(f"\t{format_config(metrics['config'].__dict__)}")
             
             print("-" * 80 + "\n")
         except Exception as e:
-            print(f"❌ Error reading {experiment_name}: {str(e)}\n")
+            print(f"Error reading {experiment_name}: {str(e)}\n")
 
 
 if __name__ == "__main__":

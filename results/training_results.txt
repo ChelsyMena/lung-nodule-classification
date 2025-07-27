@@ -1,0 +1,127 @@
+
+Found 4 training runs
+--------------------------------------------------
+Experiment: 2D_Adam_10e_64bs
+Best AUC: 0.9442
+Best Epoch: 8
+Memory Usage: 614.046875
+Training Time: 2472.5849311351776
+
+Configuration:
+	WORKDIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location
+	RESOURCES: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources
+	MODEL_RGB_I3D: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources\model_rgb.pth
+	DATADIR: D:\project_data_uncompressed\luna25_nodule_blocks
+	CSV_DIR: D:\project_data_uncompressed
+	CSV_DIR_TRAIN: D:\project_data_uncompressed\train.csv
+	CSV_DIR_VALID: D:\project_data_uncompressed\valid.csv
+	EXPERIMENT_DIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\results
+	EXPERIMENT_NAME: 2D_Adam_10e_64bs
+	MODE: 2D
+	SEED: 2025
+	NUM_WORKERS: 8
+	SIZE_MM: 50
+	SIZE_PX: 64
+	BATCH_SIZE: 64
+	ROTATION: ((-20, 20), (-20, 20), (-20, 20))
+	TRANSLATION: True
+	EPOCHS: 10
+	PATIENCE: 20
+	PATCH_SIZE: [64, 128, 128]
+	LEARNING_RATE: 0.0001
+	WEIGHT_DECAY: 0.0005
+--------------------------------------------------------------------------------
+
+Experiment: baseline2D_adam10epochs
+Best AUC: 0.9404
+Best Epoch: 7
+Memory Usage: 538.38671875
+Training Time: 2807.9927637577057
+
+Configuration:
+	WORKDIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location
+	RESOURCES: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources
+	MODEL_RGB_I3D: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources\model_3D.pth
+	DATADIR: D:\project_data_uncompressed\luna25_nodule_blocks
+	CSV_DIR: D:\project_data_uncompressed
+	CSV_DIR_TRAIN: D:\project_data_uncompressed\train.csv
+	CSV_DIR_VALID: D:\project_data_uncompressed\valid.csv
+	EXPERIMENT_DIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\results
+	EXPERIMENT_NAME: baseline2D_adam10epochs
+	MODE: 2D
+	SEED: 2025
+	NUM_WORKERS: 8
+	SIZE_MM: 50
+	SIZE_PX: 64
+	BATCH_SIZE: 32
+	ROTATION: ((-20, 20), (-20, 20), (-20, 20))
+	TRANSLATION: True
+	EPOCHS: 10
+	PATIENCE: 20
+	PATCH_SIZE: [64, 128, 128]
+	LEARNING_RATE: 0.0001
+	WEIGHT_DECAY: 0.0005
+--------------------------------------------------------------------------------
+
+Experiment: baseline3D_sgd10epochs
+Best AUC: 0.8414
+Best Epoch: 10
+Memory Usage: 4580.734375
+Training Time: 39769.17222905159
+
+Configuration:
+	WORKDIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location
+	RESOURCES: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources
+	MODEL_RGB_I3D: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources\model_rgb.pth
+	DATADIR: D:\project_data_uncompressed\luna25_nodule_blocks
+	CSV_DIR: D:\project_data_uncompressed
+	CSV_DIR_TRAIN: D:\project_data_uncompressed\train.csv
+	CSV_DIR_VALID: D:\project_data_uncompressed\valid.csv
+	EXPERIMENT_DIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\results
+	EXPERIMENT_NAME: baseline3D_sgd10epochs
+	MODE: 3D
+	SEED: 2025
+	NUM_WORKERS: 8
+	SIZE_MM: 50
+	SIZE_PX: 64
+	BATCH_SIZE: 32
+	ROTATION: ((-20, 20), (-20, 20), (-20, 20))
+	TRANSLATION: True
+	EPOCHS: 10
+	PATIENCE: 20
+	PATCH_SIZE: [64, 128, 128]
+	LEARNING_RATE: 0.0001
+	WEIGHT_DECAY: 0.0005
+--------------------------------------------------------------------------------
+
+Experiment: pipeline_test
+Best AUC: 0.5042
+Best Epoch: 4
+Memory Usage: 496.9375
+Training Time: 1195.016837835312
+
+Configuration:
+	WORKDIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location
+	RESOURCES: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources
+	MODEL_RGB_I3D: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\models\resources\model_rgb.pth
+	DATADIR: D:\project_data_uncompressed\luna25_nodule_blocks
+	CSV_DIR: D:\project_data_uncompressed
+	CSV_DIR_TRAIN: D:\project_data_uncompressed\train.csv
+	CSV_DIR_VALID: D:\project_data_uncompressed\valid.csv
+	EXPERIMENT_DIR: C:\Users\USER\iCloudDrive\iCloud~md~obsidian\iCloud Vault\Masters\Internship\lung-cancer-location\results
+	EXPERIMENT_NAME: exp
+	MODE: 2D
+	SEED: 2025
+	NUM_WORKERS: 8
+	SIZE_MM: 50
+	SIZE_PX: 64
+	BATCH_SIZE: 32
+	ROTATION: ((-20, 20), (-20, 20), (-20, 20))
+	TRANSLATION: True
+	EPOCHS: 10
+	PATIENCE: 20
+	PATCH_SIZE: [64, 128, 128]
+	LEARNING_RATE: 0.0001
+	WEIGHT_DECAY: 0.0005
+--------------------------------------------------------------------------------
+
