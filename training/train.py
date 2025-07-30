@@ -3,8 +3,9 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import psutil
 
-#Baselines
+# Models
 from models.model_2d import ResNet18
+from models.model_transformer import Transformer
 from models.model_3d import I3D
 
 import logging
@@ -127,6 +128,7 @@ def train(
 
     if config.MODE == "2D":
         model = ResNet18().to(device)
+        #model = Transformer().to(device)
     elif config.MODE == "3D":
         model = I3D(
             num_classes=1,

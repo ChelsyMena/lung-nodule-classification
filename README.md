@@ -21,4 +21,4 @@ This project classifies lung nodules (benign or malignant) using medical imaging
 ## 🧑‍💻 Author
 GitHub: [@ChelsyMena](https://github.com/ChelsyMena)
 
-Special thanks to the LUNA25 challenge team for putting together the [codebase](https://github.com/DIAGNijmegen/luna25-baseline-public/tree/main) in which this work is based.
+Special thanks to the LUNA25 challenge team for putting together the [codebase](https://github.com/DIAGNijmegen/luna25-baseline-public/tree/main) on which this work is based.
