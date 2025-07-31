@@ -28,12 +28,12 @@ if __name__ == '__main__':
 	model = ResNet18()
 	device = torch.device('cpu')
 	model.load_state_dict(torch.load(
-		r"results\2D_Adam_10e_64bs\best_metric_model.pth",
+		r"results\DataAug_Resnet18_10e_64bs\best_metric_model.pth",
 		map_location='cpu'
 	))
 	model.eval()
 
-	valid = pd.read_csv(config.CSV_DIR_VALID)
+	valid = pd.read_csv(config.CSV_DIR_TRAIN)
 
 	image_loader = get_data_loader(
 			data_dir=config.DATADIR,
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 	plt.xlabel('Predicted Label')
 	plt.ylabel('True Label')
 	plt.title('Confusion Matrix\nAUC: {:.2f}'.format(auc_metric))
-	plt.savefig('testing\confusion_matrix_resnet18.png')
+	plt.savefig('testing\confusion_matrix_dataaug1_train.png')
 
 	plt.figure(figsize=(10, 8))
 	sns.heatmap(confusion_norm, annot=True, cmap='Blues', #fmt='d',
@@ -96,4 +96,4 @@ if __name__ == '__main__':
 	plt.xlabel('Predicted Label')
 	plt.ylabel('True Label')
 	plt.title('Confusion Matrix')
-	plt.savefig('testing\confusion_matrix_norm_resnet18.png')
+	plt.savefig('testing\confusion_matrix_dataaug_train.png')

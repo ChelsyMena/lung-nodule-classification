@@ -24,7 +24,7 @@ class Configuration(object):
         self.DATADIR = Path(volumes_dir + "\luna25_nodule_blocks")
         # Path to the folder containing the CSVs for training and validation.
         self.CSV_DIR = Path(volumes_dir)
-        self.CSV_DIR_TRAIN = self.CSV_DIR / "train.csv" # Path to the training CSV
+        self.CSV_DIR_TRAIN = self.CSV_DIR / "train_augmented.csv" #"train.csv" # Path to the training CSV
         self.CSV_DIR_VALID = self.CSV_DIR / "valid.csv" # Path to the validation CSV
 
         # Results will be saved in the /results/ directory, inside a subfolder named according to the specified EXPERIMENT_NAME and MODE.
@@ -40,7 +40,7 @@ class Configuration(object):
         self.NUM_WORKERS = 8
         self.SIZE_MM = 50
         self.SIZE_PX = 64 #224 #64
-        self.BATCH_SIZE = 64 #448
+        self.BATCH_SIZE = 1 #448
         self.ROTATION =  ((-1,1), (-1,1), (-1,1)) #((-20, 20), (-20, 20), (-20, 20)) #
         self.TRANSLATION = False #True
         self.EPOCHS = 10
