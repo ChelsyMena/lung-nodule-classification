@@ -5,7 +5,7 @@ import psutil
 
 # Models
 from models.model_2d import ResNet18
-from models.model_transformer import Transformer
+#from models.model_transformer import Transformer
 from models.model_3d import I3D
 
 import logging

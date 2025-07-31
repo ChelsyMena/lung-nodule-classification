@@ -32,7 +32,7 @@ class Configuration(object):
         if not self.EXPERIMENT_DIR.exists():
             self.EXPERIMENT_DIR.mkdir(parents=True)
             
-        self.EXPERIMENT_NAME = "Transformer_10e_32bs"
+        self.EXPERIMENT_NAME = "DataAug_Resnet18_10e_64bs"
         self.MODE = "2D" #  or 3D
 
         # Training parameters
@@ -40,7 +40,7 @@ class Configuration(object):
         self.NUM_WORKERS = 8
         self.SIZE_MM = 50
         self.SIZE_PX = 64 #224 #64
-        self.BATCH_SIZE = 1
+        self.BATCH_SIZE = 64 #448
         self.ROTATION =  ((-1,1), (-1,1), (-1,1)) #((-20, 20), (-20, 20), (-20, 20)) #
         self.TRANSLATION = False #True
         self.EPOCHS = 10
