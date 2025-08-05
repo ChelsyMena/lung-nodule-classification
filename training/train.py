@@ -1,11 +1,11 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import psutil
+#import psutil
 
 # Models
-from models.model_2d import ResNet18
-#from models.model_transformer import Transformer
+#from models.model_2d import ResNet18
+from models.model_transformer import Transformer
 from models.model_3d import I3D
 
 import logging
@@ -22,8 +22,8 @@ import torch
 from dataloader import get_data_loader
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Force CPU usage
-device = torch.device('cpu')
+#os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Force CPU usage
+#device = torch.device('cpu')
 
 import sklearn.metrics as metrics
 from tqdm import tqdm
@@ -123,12 +123,12 @@ def train(
         size_px=config.SIZE_PX,
     )
 
-    #device = torch.device("cuda:0")
-    device = torch.device('cpu')
+    device = torch.device("cuda:0")
+    #device = torch.device('cpu')
 
     if config.MODE == "2D":
-        model = ResNet18().to(device)
-        #model = Transformer().to(device)
+        #model = ResNet18().to(device)
+        model = Transformer().to(device)
     elif config.MODE == "3D":
         model = I3D(
             num_classes=1,
@@ -279,13 +279,13 @@ def train(
         ) + "\n Took {:.2f} seconds".format(elapsed_time)
     )
 
-    process = psutil.Process()
-    peak_memory = process.memory_info().peak_wset if hasattr(process.memory_info(), 'peak_wset') else process.memory_info().rss
-    peak_memory_mb = peak_memory / (1024 * 1024)
+    #process = psutil.Process()
+    #peak_memory = process.memory_info().peak_wset if hasattr(process.memory_info(), 'peak_wset') else process.memory_info().rss
+    #peak_memory_mb = peak_memory / (1024 * 1024)
 
     # Add total training time and memory to best_model metadata
     metadata["total_training_time"] = elapsed_time
-    metadata["memory_usage_mb"] = peak_memory_mb
+    #metadata["memory_usage_mb"] = peak_memory_mb
     np.save(
         exp_save_root / "config.npy",
         metadata,

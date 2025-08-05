@@ -22,18 +22,19 @@ import matplotlib.pyplot as plt
 
 
 volumes_dir = Path(os.getenv("VOLUME_DIR"))
+exp = "googlecpu_biggerinput_10e_64bs"
 
 if __name__ == '__main__':
 	# load model
 	model = ResNet18()
 	device = torch.device('cpu')
 	model.load_state_dict(torch.load(
-		r"results\DataAug_Resnet18_10e_64bs\best_metric_model.pth",
+		f"results\{exp}\\best_metric_model.pth",
 		map_location='cpu'
 	))
 	model.eval()
 
-	valid = pd.read_csv(config.CSV_DIR_TRAIN)
+	valid = pd.read_csv(config.CSV_DIR_VALID)
 
 	image_loader = get_data_loader(
 			data_dir=config.DATADIR,
@@ -66,18 +67,14 @@ if __name__ == '__main__':
 		outputs.append(model_output)
 		labels.append(label)
 
-
-
 	outputs = np.array(outputs).reshape(len(outputs), -1)
 	labels = np.array(labels).reshape(-1, 1)
-	#features_and_labels = np.hstack([outputs, labels])
-	#print(features_and_labels)
+	
 	confusion = confusion_matrix(labels, outputs)
 	confusion_norm = confusion_matrix(labels, outputs, normalize='all')
 
 	fpr, tpr, _ = roc_curve(labels, outputs_raw)
 	auc_metric = auc(fpr, tpr)
-	print(fpr, tpr)
 	
 	# Plots
 	plt.figure(figsize=(10, 8))
@@ -87,13 +84,13 @@ if __name__ == '__main__':
 	plt.xlabel('Predicted Label')
 	plt.ylabel('True Label')
 	plt.title('Confusion Matrix\nAUC: {:.2f}'.format(auc_metric))
-	plt.savefig('testing\confusion_matrix_dataaug1_train.png')
+	plt.savefig(f'testing\confusion_matrices\{exp}_og_df.png')
 
-	plt.figure(figsize=(10, 8))
-	sns.heatmap(confusion_norm, annot=True, cmap='Blues', #fmt='d',
-				xticklabels=['Predicted 0', 'Predicted 1'],
-				yticklabels=['Actual 0', 'Actual 1'])
-	plt.xlabel('Predicted Label')
-	plt.ylabel('True Label')
-	plt.title('Confusion Matrix')
-	plt.savefig('testing\confusion_matrix_dataaug_train.png')
+	# plt.figure(figsize=(10, 8))
+	# sns.heatmap(confusion_norm, annot=True, cmap='Blues', #fmt='d',
+	# 			xticklabels=['Predicted 0', 'Predicted 1'],
+	# 			yticklabels=['Actual 0', 'Actual 1'])
+	# plt.xlabel('Predicted Label')
+	# plt.ylabel('True Label')
+	# plt.title('Confusion Matrix')
+	# plt.savefig(f'testing\confusion_matrices\{exp}_norm.png')
